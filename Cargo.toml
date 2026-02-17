@@ -1,0 +1,16 @@
+[package]
+name = "whitematter"
+version = "0.1.0"
+edition = "2021"
+description = "Central nervous system white matter tracts — association, commissural, and projection fiber bundles with myelination-dependent conduction, chemical modulation, and Hebbian plasticity"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Blackfall-Labs/whitematter-rs"
+keywords = ["neuromorphic", "whitematter", "tract", "axon", "myelination"]
+categories = ["science", "simulation"]
+
+[dependencies]
+ternary-signal = { path = "../ternary-signal" }
+log = "0.4"
+
+[dev-dependencies]
+env_logger = "0.11"
