@@ -43,6 +43,33 @@ impl DelayBuffer {
             .collect()
     }
 
+    /// Drain all spikes due for delivery in the range `[from_us, to_us]`.
+    ///
+    /// This visits every slot that could contain spikes arriving in the range,
+    /// ensuring no spikes are missed when the caller steps in increments larger
+    /// than the buffer capacity. Spikes with arrival times beyond `to_us` are
+    /// preserved in their slots for later delivery.
+    pub fn drain_range(&mut self, _from_us: u64, to_us: u64) -> Vec<TractSpike> {
+        let mut result = Vec::new();
+
+        // Visit every slot — any could contain due spikes when the step
+        // exceeds the buffer capacity.
+        for slot in self.slots.iter_mut() {
+            if slot.is_empty() {
+                continue;
+            }
+
+            // Partition: due spikes go to result, future spikes stay
+            let taken = core::mem::take(slot);
+            let (due, not_yet): (Vec<_>, Vec<_>) =
+                taken.into_iter().partition(|s| s.arrival_time_us <= to_us);
+            result.extend(due);
+            *slot = not_yet;
+        }
+
+        result
+    }
+
     /// Total number of in-flight spikes across all slots.
     pub fn in_flight(&self) -> usize {
         self.slots.iter().map(|s| s.len()).sum()
@@ -52,7 +79,7 @@ impl DelayBuffer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tract::{TractSpike, DendriticZone};
+    use crate::tract::{DendriticZone, TractSpike};
 
     fn spike(target: u32, arrival: u64) -> TractSpike {
         TractSpike {

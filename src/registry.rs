@@ -3,7 +3,7 @@
 //! The kernel creates tracts via catalog wiring specs and registers them here.
 //! Registry provides lookup by ID, region (efferent/afferent), and type.
 
-use crate::tract::{WhiteMatterTract, TractType, RegionId};
+use crate::tract::{RegionId, TractType, WhiteMatterTract};
 
 /// Opaque tract identifier (index into registry storage).
 pub type TractId = u32;
@@ -16,9 +16,7 @@ pub struct TractRegistry {
 impl TractRegistry {
     /// Create an empty registry.
     pub fn new() -> Self {
-        Self {
-            tracts: Vec::new(),
-        }
+        Self { tracts: Vec::new() }
     }
 
     /// Create a registry with pre-allocated capacity.
@@ -119,8 +117,8 @@ impl Default for TractRegistry {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tract::{TractConfig, DendriticZone};
     use crate::mapping::MappingKind;
+    use crate::tract::{DendriticZone, TractConfig};
 
     fn make_tract(name: &str, src: RegionId, tgt: RegionId, tt: TractType) -> WhiteMatterTract {
         WhiteMatterTract::new(TractConfig {

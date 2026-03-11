@@ -4,8 +4,8 @@
 //! The kernel calls these catalog functions to get wiring specifications, then
 //! constructs `WhiteMatterTract` instances with actual pool sizes and skull positions.
 
-use crate::tract::{TractType, DendriticZone, RegionId};
 use crate::mapping::MappingKind;
+use crate::tract::{DendriticZone, RegionId, TractType};
 
 /// Declarative specification for wiring a tract.
 ///
@@ -68,23 +68,65 @@ pub fn association_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Tra
 
     let pairs: &[(&str, &str, &str, MappingKind, f32, u8, u8)] = &[
         // Arcuate fasciculus: language comprehension → speech production
-        ("arcuate_fasciculus", "language", "expression",
-         MappingKind::Topographic, 0.6, 100, 64),
+        (
+            "arcuate_fasciculus",
+            "language",
+            "expression",
+            MappingKind::Topographic,
+            0.6,
+            100,
+            64,
+        ),
         // Superior longitudinal: spatial → motor planning
-        ("superior_longitudinal", "spatial", "planning",
-         MappingKind::Topographic, 0.5, 80, 48),
+        (
+            "superior_longitudinal",
+            "spatial",
+            "planning",
+            MappingKind::Topographic,
+            0.5,
+            80,
+            48,
+        ),
         // Inferior longitudinal: visual → object/word recognition
-        ("inferior_longitudinal", "visual", "representation",
-         MappingKind::Convergent, 0.4, 90, 48),
+        (
+            "inferior_longitudinal",
+            "visual",
+            "representation",
+            MappingKind::Convergent,
+            0.4,
+            90,
+            48,
+        ),
         // Uncinate: hippocampus → value/reasoning (emotional memory)
-        ("uncinate_fasciculus", "hippocampus", "reasoning",
-         MappingKind::Convergent, 0.3, 60, 32),
+        (
+            "uncinate_fasciculus",
+            "hippocampus",
+            "reasoning",
+            MappingKind::Convergent,
+            0.3,
+            60,
+            32,
+        ),
         // Cingulum: hippocampus → dynamics (emotional regulation)
-        ("cingulum_bundle", "hippocampus", "dynamics",
-         MappingKind::Convergent, 0.3, 70, 32),
+        (
+            "cingulum_bundle",
+            "hippocampus",
+            "dynamics",
+            MappingKind::Convergent,
+            0.3,
+            70,
+            32,
+        ),
         // Inferior fronto-occipital: visual → executive planning
-        ("inferior_fronto_occipital", "visual", "planning",
-         MappingKind::Convergent, 0.3, 80, 32),
+        (
+            "inferior_fronto_occipital",
+            "visual",
+            "planning",
+            MappingKind::Convergent,
+            0.3,
+            80,
+            32,
+        ),
     ];
 
     for &(name, src, tgt, ref mapping, density, myelin, diameter) in pairs {
@@ -92,7 +134,8 @@ pub fn association_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Tra
             tracts.push(spec(
                 name,
                 TractType::Association,
-                s, t,
+                s,
+                t,
                 mapping.clone(),
                 density,
                 myelin,
@@ -136,10 +179,10 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
     // Thalamocortical ascending: thalamus → each cortical target
     let thalamic_targets: &[(&str, u8, u8)] = &[
         // (target_region, myelination, diameter)
-        ("visual",         120, 48), // LGN → V1
-        ("spatial",         80, 32), // pulvinar → parietal
-        ("language",        80, 32), // MGN → auditory/language
-        ("planning",        60, 24), // MD → prefrontal
+        ("visual", 120, 48),  // LGN → V1
+        ("spatial", 80, 32),  // pulvinar → parietal
+        ("language", 80, 32), // MGN → auditory/language
+        ("planning", 60, 24), // MD → prefrontal
     ];
 
     if let Some(thal) = resolve("thalamus") {
@@ -149,7 +192,8 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
                 tracts.push(spec(
                     &format!("thalamocortical_{}", target),
                     TractType::Projection,
-                    thal, tgt,
+                    thal,
+                    tgt,
                     MappingKind::Topographic,
                     0.5,
                     myelin,
@@ -162,7 +206,8 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
                 tracts.push(spec(
                     &format!("corticothalamic_{}", target),
                     TractType::Projection,
-                    tgt, thal,
+                    tgt,
+                    thal,
                     MappingKind::Convergent,
                     0.3,
                     myelin,
@@ -179,7 +224,8 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
         tracts.push(spec(
             "corticostriatal_planning",
             TractType::Projection,
-            plan, bg,
+            plan,
+            bg,
             MappingKind::Convergent,
             0.4,
             80,
@@ -194,7 +240,8 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
         tracts.push(spec(
             "pallidothalamic",
             TractType::Projection,
-            bg, thal,
+            bg,
+            thal,
             MappingKind::Convergent,
             0.3,
             100,
@@ -209,7 +256,8 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
         tracts.push(spec(
             "corticopontine",
             TractType::Projection,
-            plan, expr,
+            plan,
+            expr,
             MappingKind::Divergent,
             0.3,
             60,
@@ -224,7 +272,8 @@ pub fn projection_tracts(resolve: &dyn Fn(&str) -> Option<RegionId>) -> Vec<Trac
         tracts.push(spec(
             "cerebellothalamic",
             TractType::Projection,
-            expr, thal,
+            expr,
+            thal,
             MappingKind::Convergent,
             0.3,
             100,
@@ -261,19 +310,30 @@ mod tests {
     #[test]
     fn association_catalog_produces_tracts() {
         let tracts = association_tracts(&mock_resolve);
-        assert_eq!(tracts.len(), 6, "expected 6 association tracts, got {}", tracts.len());
+        assert_eq!(
+            tracts.len(),
+            6,
+            "expected 6 association tracts, got {}",
+            tracts.len()
+        );
 
         // All should be Association type
         for t in &tracts {
             assert_eq!(t.tract_type, TractType::Association);
-            assert_eq!(t.excitatory_ratio, 128, "association tracts should be balanced");
+            assert_eq!(
+                t.excitatory_ratio, 128,
+                "association tracts should be balanced"
+            );
         }
     }
 
     #[test]
     fn commissural_catalog_empty_without_hemispheres() {
         let tracts = commissural_tracts(&mock_resolve);
-        assert!(tracts.is_empty(), "commissural tracts need hemispheric model");
+        assert!(
+            tracts.is_empty(),
+            "commissural tracts need hemispheric model"
+        );
     }
 
     #[test]
@@ -281,7 +341,11 @@ mod tests {
         let tracts = projection_tracts(&mock_resolve);
         // Should have: 4 thalamocortical + 4 corticothalamic + corticostriatal +
         // pallidothalamic + corticopontine + cerebellothalamic = 12
-        assert!(tracts.len() >= 10, "expected >=10 projection tracts, got {}", tracts.len());
+        assert!(
+            tracts.len() >= 10,
+            "expected >=10 projection tracts, got {}",
+            tracts.len()
+        );
 
         for t in &tracts {
             assert_eq!(t.tract_type, TractType::Projection);
@@ -301,6 +365,11 @@ mod tests {
 
         let tracts = projection_tracts(&sparse_resolve);
         // Only thalamocortical_visual + corticothalamic_visual should exist
-        assert_eq!(tracts.len(), 2, "sparse resolve should only produce matching pairs, got {}", tracts.len());
+        assert_eq!(
+            tracts.len(),
+            2,
+            "sparse resolve should only produce matching pairs, got {}",
+            tracts.len()
+        );
     }
 }

@@ -60,7 +60,7 @@ pub fn modulate_current(base: i32, tract_type: TractType, chemicals: &ChemicalLe
     let da_offset = chemicals.da as i64 - 128; // -128..127
     let da_scale = match tract_type {
         TractType::Projection => 128 + da_offset / 2, // range: 64..191
-        _ => 128 + da_offset / 4,                      // range: 96..159
+        _ => 128 + da_offset / 4,                     // range: 96..159
     };
     current = (current * da_scale) / 128;
 
@@ -114,7 +114,11 @@ mod tests {
             ..ChemicalLevels::baseline()
         };
         let result = modulate_current(500, TractType::Projection, &chemicals);
-        assert!(result > 500, "high DA should boost projection: {} vs 500", result);
+        assert!(
+            result > 500,
+            "high DA should boost projection: {} vs 500",
+            result
+        );
     }
 
     #[test]
@@ -134,7 +138,11 @@ mod tests {
             ..ChemicalLevels::baseline()
         };
         let result = modulate_current(500, TractType::Association, &chemicals);
-        assert!(result > 500, "high ACh should amplify strong signal: {} vs 500", result);
+        assert!(
+            result > 500,
+            "high ACh should amplify strong signal: {} vs 500",
+            result
+        );
     }
 
     #[test]
@@ -144,7 +152,11 @@ mod tests {
             ..ChemicalLevels::baseline()
         };
         let result = modulate_current(10, TractType::Association, &chemicals);
-        assert!(result < 10, "high ACh should suppress weak signal: {} vs 10", result);
+        assert!(
+            result < 10,
+            "high ACh should suppress weak signal: {} vs 10",
+            result
+        );
     }
 
     #[test]

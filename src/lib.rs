@@ -13,20 +13,20 @@
 //! This crate handles brain-internal wiring. Peripheral nerves (brain ↔ body)
 //! are handled by `fibertract-rs`.
 
+mod adapt;
+pub mod catalog;
 mod delay;
 mod mapping;
 mod modulation;
-mod tract;
-mod adapt;
 mod plasticity;
-pub mod catalog;
 mod registry;
+mod tract;
 
+pub use adapt::{adapt_tract, AdaptConfig};
+pub use catalog::TractWiringSpec;
 pub use delay::DelayBuffer;
 pub use mapping::{MappingKind, MappingLUT};
-pub use modulation::{ChemicalLevels, modulate_current};
-pub use tract::{TractType, TractSpike, DendriticZone, WhiteMatterTract, TractConfig};
-pub use adapt::{AdaptConfig, adapt_tract};
+pub use modulation::{modulate_current, ChemicalLevels};
 pub use plasticity::update_plasticity;
-pub use catalog::TractWiringSpec;
 pub use registry::{TractId, TractRegistry};
+pub use tract::{DendriticZone, TractConfig, TractSpike, TractType, WhiteMatterTract};

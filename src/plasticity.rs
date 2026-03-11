@@ -50,10 +50,7 @@ pub fn update_plasticity(
         for &tgt_idx in targets {
             total_projected += 1;
 
-            let tgt_active = target_fired
-                .get(tgt_idx as usize)
-                .copied()
-                .unwrap_or(false);
+            let tgt_active = target_fired.get(tgt_idx as usize).copied().unwrap_or(false);
 
             if tgt_active {
                 correlated += 1;
@@ -82,8 +79,8 @@ pub fn update_plasticity(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tract::{TractConfig, TractType, DendriticZone, WhiteMatterTract};
     use crate::mapping::MappingKind;
+    use crate::tract::{DendriticZone, TractConfig, TractType, WhiteMatterTract};
 
     fn test_tract() -> WhiteMatterTract {
         WhiteMatterTract::new(TractConfig {
@@ -118,7 +115,8 @@ mod tests {
         assert!(
             tract.myelination > old_myelin,
             "correlated activity should strengthen: {} vs {}",
-            tract.myelination, old_myelin
+            tract.myelination,
+            old_myelin
         );
     }
 

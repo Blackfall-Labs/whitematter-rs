@@ -79,8 +79,8 @@ pub fn adapt_tract(tract: &mut WhiteMatterTract, config: &AdaptConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tract::{TractConfig, TractType, DendriticZone, WhiteMatterTract};
     use crate::mapping::MappingKind;
+    use crate::tract::{DendriticZone, TractConfig, TractType, WhiteMatterTract};
 
     fn test_tract() -> WhiteMatterTract {
         WhiteMatterTract::new(TractConfig {
@@ -114,7 +114,8 @@ mod tests {
         assert!(
             tract.myelination > old_myelin,
             "high traffic should myelinate: {} vs {}",
-            tract.myelination, old_myelin
+            tract.myelination,
+            old_myelin
         );
     }
 
@@ -131,7 +132,8 @@ mod tests {
         assert!(
             tract.myelination < old_myelin,
             "low traffic should demyelinate: {} vs {}",
-            tract.myelination, old_myelin
+            tract.myelination,
+            old_myelin
         );
     }
 
@@ -144,7 +146,11 @@ mod tests {
         tract.traffic_density = 0;
         adapt_tract(&mut tract, &config);
 
-        assert!(tract.health < 255, "unused tract should degrade: {}", tract.health);
+        assert!(
+            tract.health < 255,
+            "unused tract should degrade: {}",
+            tract.health
+        );
     }
 
     #[test]
@@ -157,7 +163,11 @@ mod tests {
         tract.traffic_density = 50;
         adapt_tract(&mut tract, &config);
 
-        assert!(tract.health > 200, "used tract should recover: {}", tract.health);
+        assert!(
+            tract.health > 200,
+            "used tract should recover: {}",
+            tract.health
+        );
     }
 
     #[test]

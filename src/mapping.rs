@@ -46,7 +46,9 @@ impl MappingLUT {
         seed: u64,
     ) -> Self {
         if source_n == 0 || target_n == 0 {
-            return Self { entries: Vec::new() };
+            return Self {
+                entries: Vec::new(),
+            };
         }
 
         let mut rng = seed ^ 0xABCD_EF01_2345_6789;

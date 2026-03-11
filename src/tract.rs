@@ -2,7 +2,7 @@
 
 use crate::delay::DelayBuffer;
 use crate::mapping::{MappingKind, MappingLUT};
-use crate::modulation::{ChemicalLevels, modulate_current};
+use crate::modulation::{modulate_current, ChemicalLevels};
 
 /// Three white matter tract systems.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -152,7 +152,11 @@ fn compute_delay(corridor_length: u16, tract_type: TractType, myelination: u8) -
 impl WhiteMatterTract {
     /// Create a new tract from configuration.
     pub fn new(config: TractConfig) -> Self {
-        let delay_us = compute_delay(config.corridor_length, config.tract_type, config.myelination);
+        let delay_us = compute_delay(
+            config.corridor_length,
+            config.tract_type,
+            config.myelination,
+        );
 
         // Delay buffer capacity: enough to hold max delay + margin.
         // Convert delay_us to a reasonable slot count.
@@ -222,7 +226,10 @@ impl WhiteMatterTract {
         for &src_idx in fired {
             if enqueued >= capacity {
                 // Bandwidth saturated — biologically valid drop
-                log::trace!("tract '{}': bandwidth saturated, dropping spikes", self.name);
+                log::trace!(
+                    "tract '{}': bandwidth saturated, dropping spikes",
+                    self.name
+                );
                 break;
             }
 
@@ -264,6 +271,15 @@ impl WhiteMatterTract {
     /// Deliver all spikes due at `current_time_us`.
     pub fn deliver(&mut self, current_time_us: u64) -> Vec<TractSpike> {
         self.delay_buffer.drain_due(current_time_us)
+    }
+
+    /// Deliver all spikes due within the time range `[from_us, to_us]`.
+    ///
+    /// Unlike `deliver()` which only checks a single slot, this method
+    /// visits all slots in the range, ensuring no spikes are missed
+    /// when the caller advances in steps larger than the slot granularity.
+    pub fn deliver_range(&mut self, from_us: u64, to_us: u64) -> Vec<TractSpike> {
+        self.delay_buffer.drain_range(from_us, to_us)
     }
 
     /// Number of spikes currently in flight through this tract.
@@ -386,7 +402,12 @@ mod tests {
     fn myelination_affects_delay() {
         let unmyel = compute_delay(10, TractType::Association, 0);
         let myel = compute_delay(10, TractType::Association, 255);
-        assert!(myel < unmyel, "myelinated should be faster: {} vs {}", myel, unmyel);
+        assert!(
+            myel < unmyel,
+            "myelinated should be faster: {} vs {}",
+            myel,
+            unmyel
+        );
     }
 
     #[test]
